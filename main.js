@@ -4,8 +4,11 @@ const os = require('os');
 const https = require('https');//for API requests
 const http = require('http');//for website gateway - getting a certificate doesn't sound easy
 require('dotenv').config();//read the env
-let storage = require("./storage.json");
-if (!storage) {//create a new one if empty
+
+let storage;
+if (fs.existsSync('./storage.json')) {
+    storage = require("./storage.json");
+} else {
     storage = {
         serverSettings: {},//this may be incorrect
         guilds: [],
@@ -847,6 +850,9 @@ var queueTick = setInterval(() => {
     }
 }, storage.queueDelay);
 
+setTimeout(() => {
+    fs.writeFileSync("./storage.json", JSON.stringify(storage, null, 4))
+}, 1000);
 
 //#endregion
 
