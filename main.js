@@ -415,7 +415,7 @@ client.on("message", (msg) => {
     //
     if (msg.author.bot || !msg.content.startsWith(process.env.BOT_PREFIX) || process.env.USER_BLACKLIST.includes(msg.author.id) || msg.system || msg.webhookID) return;//ignores bots, DMs, people on blacklist, and anything not starting with the prefix
     let messageArray = msg.content.split(" ");
-    let command = messageArray[0].substring(process.env.BOT_PREFIX).toLowerCase();
+    let command = messageArray[0].substring(process.env.BOT_PREFIX.length).toLowerCase();
     const args = messageArray.slice(1);
 
     switch (command) {
