@@ -4,8 +4,8 @@
   "description": "Designed for private use | For more info, visit github.com/ALU52/DRA_bot",
   "main": "main.js",
   "scripts": {
-    "test": "main.js",
-    "start": "main.js"
+    "test": "node main.js",
+    "start": "node main.js"
   },
   "repository": {
     "type": "git",
