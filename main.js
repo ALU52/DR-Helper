@@ -361,10 +361,6 @@ client.on("message", (msg) => {
     if (waitList.has(msg.author.id) && msg.channel.type == "dm") { handleWaitResponse(msg.author, msg.content); return };//handle when people reply to the link guide if they're on the waitlist
     /** @type {ServerSettings|null} */
     let serverSettings = null;
-    /** @type {VoiceSession|null} */
-    let activeSession = null;//for vc related commands
-    if (msg.guild) serverSettings = fetchSettings(msg.guild.id)
-    if (msg.guild) activeSession = activeSessions.filter(session => session.guild.id == msg.guild.id)//find an active session for vc commands
     //filter area
     if (serverSettings) {///only even tries to check in servers
         if (msg.content && serverSettings.blockProfanity && msg.deletable && !msg.author.bot && !msg.webhookID && msg.channel.type == 'text') {//check for profanity - ignore if no action can be taken
