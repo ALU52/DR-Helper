@@ -1,1 +1,2 @@
+web:
 bot: node main.js
