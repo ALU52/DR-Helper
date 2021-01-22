@@ -23,6 +23,7 @@
   "homepage": "https://github.com/ALU52/DR-Helper#readme",
   "dependencies": {
     "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
     "https": "^1.0.0",
     "xhr2": "^0.2.0"
   }

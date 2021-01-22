@@ -3,6 +3,7 @@ const fs = require('fs');
 const os = require('os');
 const https = require('https');//for API requests
 const http = require('http');//for website gateway - getting a certificate doesn't sound easy
+require('dotenv').config();//read the env
 let storage = require("./storage.json");
 if (!storage) {//create a new one if empty
     storage = {
