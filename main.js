@@ -29,7 +29,6 @@ var rateLimitMode = false;//stops the bot for a while on rate limit
 var waitList = new Set();//list of people who need to give an API key to link
 var waitCD = new Set();//a list of people who've recently responded to a linkGuide, enforces limit so gw API doesn't get spammed by jerks
 var shutdownPending = false;//prevents new operation from being started when the bot is trying to restart
-let manifest;//used for checking config integrity and restoring default values if needed
 
 storage.lastBoot = Date.now();
 if (!storage.ignoreList) storage.ignoreList = [];//not sure if its safe to remove this yet
@@ -848,80 +847,6 @@ var queueTick = setInterval(() => {
     }
 }, storage.queueDelay);
 
-let backupTick = setInterval(() => {//organizes files and creates backups
-    manifest = require("./manifest.json")//time to load up the manifest again
-    //verify config before saving it
-    Object.getOwnPropertyNames(storage).forEach(en => {//check data types
-        if (!manifest.config[en]) return;//ignore if its not on the manifest for some reason
-        if (typeof storage[en] != manifest.config[en].type) {
-            log('WARN', `Found wrong data type for ${en}! Restoring default`)
-            storage[en] = manifest.config[en].default
-        }
-    })
-    Object.getOwnPropertyNames(manifest.config).forEach(en => {//now look for missing settings
-        if (!storage[en]) {//if its gone
-            storage[en] = manifest.config[en].default//bring it back!
-        }
-    })
-    //now save it
-    fs.writeFileSync("./storage.json", JSON.stringify(storage, null, 4));
-    let svConf = manifest.serverSettings//load up server specific settings
-    client.guilds.cache.forEach(s => {//for each server
-        if (!fetchSettings(s.id)) {//if settings are missing
-            let newConf = {}//create new settings object
-            Object.getOwnPropertyNames(svConf).forEach(c => {//for each setting from manifest
-                newConf[c] = svConf[c].default//copy data from the manifest over
-            })
-            fetchSettings(s.id) = newConf//save it
-            return;
-        }
-        Object.getOwnPropertyNames(fetchSettings(s.id)).forEach(ss => {//check existing settings for each server
-            if (typeof fetchSettings(s.id)[ss] != svConf[ss].type) {//if its the wrong data type
-                log('WARN', `Wrong data type found for ${s.id}/${ss}`)
-                fetchSettings(s.id)[ss] = svConf[ss].default
-            }
-        })
-        Object.getOwnPropertyNames(svConf).forEach(ss => {//check if any new settings need to be added
-            if (!fetchSettings(s.id)[ss]) {//if its missing
-                fetchSettings(s.id)[ss] = svConf[ss].default
-            }
-        })
-    });
-    //backup done, now run daily operations if applicable
-    if (((Date.now() - storage.lastBackup) >= storage.backupInterval) || !storage.lastBackup) {
-        log('INFO', "Running backups and purging old logs...")
-        storage.lastBackup = Date.now();
-        //migrate logs to avoid having one big-ass file // I think its causing memory leaks
-        if (fs.existsSync("./logs/latest.log")) {
-            let newPath = `./logs/${new Date(Date.now()).toDateString().replace(/\s/g, "_")}.log`
-            fs.renameSync("./logs/latest.log", newPath)
-        }
-        //now see if any need to be deleted
-        fs.readdir("./logs/", (err, files) => {
-            if (err) {
-                log('ERR', err.message)
-                return;
-            }
-            let c = 0;
-            files.forEach(file => {
-                if ((Date.now() - fs.statSync(`./logs/${file}`).birthtimeMs) > (storage.backupInterval * 7) && file != 'latest.log') {//deletes the files after they're a week old
-                    try {
-                        log("INFO", `Deleting ${file}`)
-                        fs.unlinkSync(`./logs/${file}`)
-                    } catch (error) {//I haven't tested this very much. Node
-                        log('ERR', "Failed to delete an old log file: " + error.message)
-                    }
-                }
-            })
-        })
-    }
-
-
-}, 5000);
-function stopBackup() {
-    clearInterval(backupTick)//stop the timer
-    fs.writeFileSync("./storage.json", JSON.stringify(storage));
-};
 
 //#endregion
 
