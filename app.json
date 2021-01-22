@@ -1,0 +1,12 @@
+{
+    "name": "DR Helper Bot",
+    "description": "Designed for private use | For more info, visit github.com/ALU52/DRA_bot",
+    "repository": "https://github.com/ALU52/DR-Helper",
+    "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/main/public/node.svg",
+    "keywords": [
+        "node",
+        "discord",
+        "guildwars2"
+    ],
+    "image": "heroku/nodejs"
+}
