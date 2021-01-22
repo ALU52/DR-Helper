@@ -19,8 +19,6 @@ var webPush = new XMLHttpRequest();
 //this filter has been causing more problems than solutions, it may be removed in the future
 var BadWords = ['shit', 'fuck'];
 var wordRegex = new RegExp(BadWords.join("|"), 'gi');
-const { black } = require("color-name");
-const { count } = require("console");
 
 
 const client = new Discord.Client();//The bot client... duhhh
